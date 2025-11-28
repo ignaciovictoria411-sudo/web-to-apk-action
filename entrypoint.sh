@@ -2,7 +2,7 @@
 set -e
 
 echo "🟦 Web to APK Action (Java 21) Start"
-echo "Java version:"
+echo "Java version:" 
 java -version
 
 APP_NAME="${INPUT_APP_NAME}"
@@ -27,8 +27,8 @@ npx cap sync
 
 cd android
 
-# 确保 Gradle + compileOptions / kotlinOptions 支持 Java 21
-echo "🛠️ Applying Java 21 compile settings..."
+echo "🛠️ Setting compileOptions for Java 21 compatibility..."
+# patch build.gradle 的 compileOptions
 if grep -q "compileOptions" app/build.gradle; then
   sed -i "/compileOptions {/,/}/ s/sourceCompatibility .*/sourceCompatibility = JavaVersion.VERSION_21/" app/build.gradle
   sed -i "/compileOptions {/,/}/ s/targetCompatibility .*/targetCompatibility = JavaVersion.VERSION_21/" app/build.gradle
@@ -40,14 +40,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
   }
-  kotlinOptions {
-    jvmTarget = "21"
-  }
 }
 EOF
 fi
 
-echo "🔨 Building APK with Gradle..."
+echo "🔨 Building APK with Gradle + Java 21..."
 ./gradlew assembleRelease
 
 APK_PATH="app/build/outputs/apk/release/app-release.apk"
