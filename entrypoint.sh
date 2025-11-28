@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🟦 Web to APK Action Start"
+echo "🟦 Web to APK Action (Java 21 + SDK 36) Start"
 echo "Java version:"
 java -version
 
@@ -27,11 +27,23 @@ npx cap sync
 
 cd android
 
-echo "🔨 Building APK (assembleRelease)..."
+echo "🛠️ Updating compileSdkVersion / targetSdkVersion to 36"
+# variables.gradle 中如果有 sdk version 定义，可 patch
+if grep -q "compileSdkVersion" variables.gradle; then
+  sed -i "s/compileSdkVersion = [0-9]\\+/compileSdkVersion = 36/" variables.gradle
+fi
+if grep -q "targetSdkVersion" variables.gradle; then
+  sed -i "s/targetSdkVersion = [0-9]\\+/targetSdkVersion = 36/" variables.gradle
+fi
+
+echo "🔨 Building APK with Gradle + Java 21 + SDK 36..."
 ./gradlew assembleRelease
+
+APK_PATH="app/build/outputs/apk/release/app-release.apk"
 
 echo "🔍 Searching for generated .apk file..."
 # 查找所有 apk 文件（release 或 debug），优先 release
+ls -R android/app/build/outputs
 APK_FILE=$(find app/build/outputs/apk -type f -name "*.apk" | grep -E "(release|debug)" | head -n 1 || true)
 
 if [ -z "$APK_FILE" ]; then
@@ -42,3 +54,4 @@ fi
 echo "🎉 Found APK: $APK_FILE"
 cp "$APK_FILE" /github/workspace/app-release.apk
 echo "✅ Done. Output: app-release.apk"
+
