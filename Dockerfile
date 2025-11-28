@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-# 基础工具
+# 基础工具 + JDK 17
 RUN apt-get update && apt-get install -y \
   curl wget unzip git openjdk-17-jdk \
   && rm -rf /var/lib/apt/lists/*
@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-# Node 18
+# 安装 Node 18
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get install -y nodejs
 
-# Capacitor CLI
+# 安装 Capacitor CLI
 RUN npm install -g @capacitor/cli
 
 # Android SDK
