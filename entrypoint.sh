@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-echo "🟦 Web to APK Action: Start"
-echo "Java version:" 
+echo "🟦 Web to APK Action (Java 21) Start"
+echo "Java version:"
 java -version
 
 APP_NAME="${INPUT_APP_NAME}"
 APP_ID="${INPUT_APP_ID}"
 BUILD_COMMAND="${INPUT_BUILD_COMMAND}"
-WEB_DIR="${INPUT_WEB_DIR}"
+WEB_DIR="${INPUT_WEB_DIR:-dist}"
 
 echo "⚙️ Running user build command..."
 sh -c "$BUILD_COMMAND"
@@ -25,26 +25,29 @@ npx cap add android
 echo "🔗 Syncing Web assets..."
 npx cap sync
 
-# **Patch Android project to force Java 17 compatibility**
-echo "🛠️ Patching Android build.gradle for Java 17 compatibility..."
-# 进入 android 目录
 cd android
-# backup original build.gradle
-cp app/build.gradle app/build.gradle.bak || true
 
-# 用 sed 修改 build.gradle compileOptions 中的 sourceCompatibility & targetCompatibility
-# 注意：仅在存在 compileOptions 的情况下替换
-sed -i "/compileOptions {/,/}/ { 
-  s/sourceCompatibility .*/sourceCompatibility JavaVersion.VERSION_17/
-  s/targetCompatibility .*/targetCompatibility JavaVersion.VERSION_17/
-}" app/build.gradle
+# 确保 Gradle + compileOptions / kotlinOptions 支持 Java 21
+echo "🛠️ Applying Java 21 compile settings..."
+if grep -q "compileOptions" app/build.gradle; then
+  sed -i "/compileOptions {/,/}/ s/sourceCompatibility .*/sourceCompatibility = JavaVersion.VERSION_21/" app/build.gradle
+  sed -i "/compileOptions {/,/}/ s/targetCompatibility .*/targetCompatibility = JavaVersion.VERSION_21/" app/build.gradle
+else
+  cat << 'EOF' >> app/build.gradle
 
-# 如果 kotlinOptions 存在，也设 jvmTarget = "17"
-sed -i "/kotlinOptions {/,/}/ { 
-  s/jvmTarget = .*/jvmTarget = \"17\"/
-}" app/build.gradle || true
+android {
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+  }
+  kotlinOptions {
+    jvmTarget = "21"
+  }
+}
+EOF
+fi
 
-echo "🔨 Building APK..."
+echo "🔨 Building APK with Gradle..."
 ./gradlew assembleRelease
 
 APK_PATH="app/build/outputs/apk/release/app-release.apk"
