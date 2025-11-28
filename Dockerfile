@@ -5,11 +5,15 @@ RUN apt-get update && apt-get install -y \
   curl wget unzip git openjdk-17-jdk \
   && rm -rf /var/lib/apt/lists/*
 
-# 安装 Node 18（必须）
+# 设置 Java 17 环境变量（关键步骤）
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
+# Node 18
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get install -y nodejs
 
-# 安装 Capacitor CLI
+# Capacitor CLI
 RUN npm install -g @capacitor/cli
 
 # Android SDK
