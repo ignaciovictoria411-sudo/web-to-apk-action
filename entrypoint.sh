@@ -43,7 +43,8 @@ APK_PATH="app/build/outputs/apk/release/app-release.apk"
 
 echo "🔍 Searching for generated .apk file..."
 # 查找所有 apk 文件（release 或 debug），优先 release
-ls -R android/app/build/outputs
+pwd
+ls -R ./
 APK_FILE=$(find app/build/outputs/apk -type f -name "*.apk" | grep -E "(release|debug)" | head -n 1 || true)
 
 if [ -z "$APK_FILE" ]; then
