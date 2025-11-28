@@ -3,6 +3,9 @@ set -e
 
 echo "🟦 Web to APK Action: Start"
 
+echo "Java version:"
+java -version
+
 APP_NAME="${INPUT_APP_NAME}"
 APP_ID="${INPUT_APP_ID}"
 BUILD_COMMAND="${INPUT_BUILD_COMMAND}"
@@ -30,7 +33,6 @@ cd android
 APK_PATH="app/build/outputs/apk/release/app-release.apk"
 
 echo "🎉 APK built: $APK_PATH"
-
 cp $APK_PATH /github/workspace/app-release.apk
 
 echo "✅ Done. Output: app-release.apk"
