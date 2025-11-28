@@ -17,7 +17,34 @@ echo "📁 Creating Capacitor wrapper..."
 npm init -y
 npm install @capacitor/core @capacitor/android
 
-npx cap init "$APP_NAME" "$APP_ID" --web-dir="$WEB_DIR"
+npx cap init "$APP_NAME" "$APP_ID" --web-dir="$WEB_DIR
+
+name: "Web to APK Action"
+description: "Build any Web project (HTML/Vue/React/Vite) into an Android APK using Capacitor"
+author: "cemcoe"
+branding:
+  icon: "package"
+  color: "blue"
+
+inputs:
+  app_name:
+    description: "App name"
+    required: true
+  app_id:
+    description: "App package id (e.g. com.cemcoe.app)"
+    required: true
+  build_command:
+    description: "Command to build the web project"
+    required: true
+  web_dir:
+    description: "Web build output directory"
+    required: false
+    default: "dist"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+
 
 echo "📱 Adding Android platform..."
 npx cap add android
