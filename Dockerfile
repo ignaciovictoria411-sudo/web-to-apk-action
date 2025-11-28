@@ -17,6 +17,33 @@ RUN npm install -g @capacitor/cli
 
 # Android SDK 设置
 ENV ANDROID_HOME=/usr/local/android-sdk
+
+name: "Web to APK Action"
+description: "Build any Web project (HTML/Vue/React/Vite) into an Android APK using Capacitor"
+author: "cemcoe"
+branding:
+  icon: "package"
+  color: "blue"
+
+inputs:
+  app_name:
+    description: "App name"
+    required: true
+  app_id:
+    description: "App package id (e.g. com.cemcoe.app)"
+    required: true
+  build_command:
+    description: "Command to build the web project"
+    required: true
+  web_dir:
+    description: "Web build output directory"
+    required: false
+    default: "dist"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+com.cemcoe.app
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/36.0.0/
 
 RUN mkdir -p $ANDROID_HOME && cd $ANDROID_HOME && \
