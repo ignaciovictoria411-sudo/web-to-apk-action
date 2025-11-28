@@ -42,14 +42,16 @@ echo "🔨 Building APK with Gradle + Java 21 + SDK 36..."
 APK_PATH="app/build/outputs/apk/release/app-release.apk"
 
 echo "🔍 Searching for generated .apk file..."
-# 查找所有 apk 文件（release 或 debug），优先 release
-cd ./app/build
+
+# 【修改点】删除下面这行 cd，保持在 android 根目录下
+# cd ./app/build 
+
 pwd
-ls ./
+# 【保持不变】这样路径就是对的： android/app/build/outputs/apk
 APK_FILE=$(find app/build/outputs/apk -type f -name "*.apk" | grep -E "(release|debug)" | head -n 1 || true)
 
 if [ -z "$APK_FILE" ]; then
-  echo "❗ No APK file found under app/build/outputs/apk — build might produced .aab or failed silently"
+  echo "❗ No APK file found..."
   exit 1
 fi
 
